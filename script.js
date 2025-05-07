@@ -69,7 +69,7 @@ function updateCartModal() {
     const cartItemElement = document.createElement("div");
     cartItemElement.classList.add(
       "flex",
-      "justify-beteween",
+      "justify-between",
       "mb-4",
       "flex-col"
     );
@@ -106,7 +106,7 @@ function updateCartModal() {
 // Função remover o intem do carrinho
 
 cartItemsContainer.addEventListener("click", function (event) {
-  if (event.target.classList.contains(remove - btn)) {
+  if (event.target.classList.contains("remove-btn")) {
     const name = event.target.getAttribute("data-name");
 
     removeItemCart(name);
@@ -114,9 +114,9 @@ cartItemsContainer.addEventListener("click", function (event) {
 });
 
 function removeItemCart(name) {
-  const index = cart.findIndex((item) => item.name === name);
+  const index = cart.findIndex(item => item.name === name);
 
-  if (Index !== -1) {
+  if (index !== -1) {
     const item = cart[index];
 
     if (item.quantity > 1) {
@@ -129,3 +129,17 @@ function removeItemCart(name) {
     updateCartModal();
   }
 }
+
+addressInput.addEventListener("input", function(event){
+  let inputValue = event.target.value
+
+
+})
+
+checkoutBtn.addEventListener("click", function(){
+  if(cart.length === 0) return
+
+  if(addressInput.value ===""){
+    
+  }
+})
