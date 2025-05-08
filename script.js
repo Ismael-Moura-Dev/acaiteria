@@ -83,7 +83,7 @@ function updateCartModal() {
       </div>
 
       <div> 
-        <button class="remove-btn" data-name=" ${item.name}">
+        <button class="remove-btn" data-name="${item.name}">
           Remover
         </button>
       </div>
@@ -114,7 +114,7 @@ cartItemsContainer.addEventListener("click", function (event) {
 });
 
 function removeItemCart(name) {
-  const index = cart.findIndex(item => item.name === name);
+  const index = cart.findIndex((item) => item.name === name);
 
   if (index !== -1) {
     const item = cart[index];
@@ -130,16 +130,78 @@ function removeItemCart(name) {
   }
 }
 
-addressInput.addEventListener("input", function(event){
-  let inputValue = event.target.value
+addressInput.addEventListener("input", function (event) {
+  let inputValue = event.target.value;
 
-
-})
-
-checkoutBtn.addEventListener("click", function(){
-  if(cart.length === 0) return
-
-  if(addressInput.value ===""){
-    
+  if (inputValue !== "") {
+    addressWarn.classList.add("hidden");
+    addressInput.classList.remove("border-red-500");
   }
-})
+});
+
+//Finalizar pedido
+checkoutBtn.addEventListener("click", function () {
+  const isOpen = checkLanchoneteOpen();
+  if (!isOpen) {
+    Toastify({
+      text: "A lanchonete está fechada!!",
+      duration: 3000,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "center", // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        background: "#FF0000",
+      },
+    }).showToast()
+
+    return;
+  }
+
+  if (cart.length === 0) return;
+  if (addressInput.value === "") {
+    addressWarn.classList.remove("hidden");
+    addressInput.classList.add("border-red-500");
+    return;
+  }
+
+  //Enviar o pedido para api whatsApp
+
+  const cartItems = cart
+    .map((item) => {
+      return ` ${item.name} | Quantidade: (${item.quantity}) | Preço R$ ${item.price} |`;
+    })
+    .join("\n");
+
+  const message = encodeURIComponent(
+    `Itens do pedido:\n ${cartItems} \n\nEndereço: ${addressInput.value}`
+  );
+  const phone = "+558586580864";
+
+  window.open(
+    `https://wa.me/${phone}?text=${message} Endereço: ${addressInput.value}`,
+    "_blank"
+  );
+
+  cart = []; // Limpa o carrinho após enviar a menssagem.
+  updateCartModal();
+});
+
+//Verifica a hora e manipular o horário
+
+function checkLanchoneteOpen() {
+  const data = new Date();
+  const hora = data.getHours();
+  return hora >= 17 && hora < 23;
+}
+
+const spanItem = document.getElementById("date-span");
+const isOpen = checkLanchoneteOpen();
+
+if (isOpen) {
+  spanItem.classList.remove("bg-red-500");
+  spanItem.classList.add("bg-green-600");
+} else {
+  spanItem.classList.remove("bg-green-600");
+  spanItem.classList.add("bg-red-500");
+}
