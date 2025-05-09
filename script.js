@@ -28,9 +28,14 @@ closeModalBtn.addEventListener("click", function () {
   cartModal.style.display = "none";
 });
 
-menu.addEventListener("click", function (event) {
-  // console.log(event.target)
+document.addEventListener("keydown", function (event){
+  if (event.key === "Escape"){
+    cartModal.style.display = "none"
+  }
+})
 
+ // Adicionar produto ao carrinho
+menu.addEventListener("click", function (event) {
   let parentButton = event.target.closest(".add-to-cart-btn");
 
   if (parentButton) {
@@ -59,7 +64,7 @@ function addToCart(name, price) {
   updateCartModal();
 }
 
-//Atualiza o carrinho mostrando os pedidos
+//Atualiza o carrinho 
 
 function updateCartModal() {
   cartItemsContainer.innerHTML = "";
@@ -78,14 +83,15 @@ function updateCartModal() {
     <div class= "flex items-center justify-between">
       <div>
       <p class="font-bold">${item.name}</p>
-      <p> Qtd: ${item.quantity}</p>
-      <p class="font-bold mt-2">R$ ${item.price.toFixed(2)}</p>
+      <p> Qtd:${item.quantity}</p>
+      <p class="font-bold mt-2">R$${item.price.toFixed(2)}</p>
       </div>
 
-      <div> 
-        <button class="remove-btn" data-name="${item.name}">
-          Remover
-        </button>
+      <div class= "flex flex-col gap-2"> 
+        <button class= "add-btn px-2 py-1 rounded" data-name="${item.name}"> + </button>
+        <button class="remove-btn" data-name="${item.name}"> Remover </button>
+        <button class="subtract-btn px-2 py-1 rounded" data-name="${item.name}"> - </button>
+        
       </div>
     </div>`;
 
@@ -103,33 +109,63 @@ function updateCartModal() {
   cartCounter.innerHTML = totalItems;
 }
 
-// Função remover o intem do carrinho
+// Função remover o item do carrinho
 
 cartItemsContainer.addEventListener("click", function (event) {
   if (event.target.classList.contains("remove-btn")) {
     const name = event.target.getAttribute("data-name");
-
     removeItemCart(name);
+  } else if (event.target.classList.contains("add-btn")){
+    const name = event.target.getAttribute("data-name")
+    addItemCart(name)
+  } else if (event.target.classList.contains("subtract-btn")) {
+    const name = event.target.getAttribute("data-name")
+    subtractItemCart(name)
   }
 });
 
-function removeItemCart(name) {
-  const index = cart.findIndex((item) => item.name === name);
+function removeItemCart(name){
+  cart = cart.filter(item => item.name !== name)
+    updateCartModal()
+  }
 
-  if (index !== -1) {
-    const item = cart[index];
-
-    if (item.quantity > 1) {
-      item.quantity -= 1;
-      updateCartModal();
-      return;
-    }
-
-    cart.splice(index, 1);
-    updateCartModal();
+function addItemCart(name){
+  const item = cart.find(item => item.name === name)
+  if (item) {
+    item.quantity += 1
+    updateCartModal()
   }
 }
 
+function subtractItemCart(name) {
+  const item = cart.find(item => item.name === name)
+  if (item) {
+    if (item.quantity > 1) {
+      item.quantity -= 1
+    } else{
+      cart = cart.filter(i => i.name !== name)
+    }
+    updateCartModal()
+  }
+}
+// function removeItemCart(name) {
+//   const index = cart.findIndex((item) => item.name === name);
+
+//   if (index !== -1) {
+//     const item = cart[index];
+
+//     if (item.quantity > 1) {
+//       item.quantity -= 1;
+//       updateCartModal();
+//       return;
+//     }
+
+//     cart.splice(index, 1);
+//     updateCartModal();
+//   }
+// }
+
+    //validação do endereço
 addressInput.addEventListener("input", function (event) {
   let inputValue = event.target.value;
 
@@ -179,11 +215,11 @@ checkoutBtn.addEventListener("click", function () {
   const phone = "+558586580864";
 
   window.open(
-    `https://wa.me/${phone}?text=${message} Endereço: ${addressInput.value}`,
+    `https://wa.me/${phone}?text=${message},`,
     "_blank"
   );
 
-  cart = []; // Limpa o carrinho após enviar a menssagem.
+  cart = []; // Limpa o carrinho após enviar a mensagem.
   updateCartModal();
 });
 
